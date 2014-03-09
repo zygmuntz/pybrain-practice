@@ -43,8 +43,6 @@ trainer = BackpropTrainer( net,ds )
 train_mse, validation_mse = trainer.trainUntilConvergence( verbose = True, validationProportion = validation_proportion, 
 	maxEpochs = epochs, continueEpochs = continue_epochs )
 
-print results
-	
 pickle.dump( net, open( output_model_file, 'wb' ))
 
 
