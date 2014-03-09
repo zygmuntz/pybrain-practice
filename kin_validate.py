@@ -1,4 +1,4 @@
-"train a regression MLP"
+"train/validate to find out how many epochs to train"
 
 import numpy as np
 import cPickle as pickle
@@ -9,12 +9,14 @@ from pybrain.supervised.trainers import BackpropTrainer
 
 train_file = 'data/train.csv'
 validation_file = 'data/validation.csv'
-output_model_file = 'model.pkl'
+output_model_file = 'model_val.pkl'
 
 hidden_size = 100
-epochs = 600
+epochs = 1000
+continue_epochs = 10	
+validation_proportion = 0.15
 
-# load data
+# load data, join train and validation files
 
 train = np.loadtxt( train_file, delimiter = ',' )
 validation = np.loadtxt( validation_file, delimiter = ',' )
@@ -35,15 +37,13 @@ ds.setField( 'target', y_train )
 
 # init and train
 
-net = buildNetwork( input_size, hidden_size, target_size, bias = True )
+net = buildNetwork( input_size, hidden_size, target_size, bias= True )
 trainer = BackpropTrainer( net,ds )
 
-print "training for {} epochs...".format( epochs )
+train_mse, validation_mse = trainer.trainUntilConvergence( verbose = True, validationProportion = validation_proportion, 
+	maxEpochs = epochs, continueEpochs = continue_epochs )
 
-for i in range( epochs ):
-	mse = trainer.train()
-	rmse = sqrt( mse )
-	print "training RMSE, epoch {}: {}".format( i + 1, rmse )
+print results
 	
 pickle.dump( net, open( output_model_file, 'wb' ))
 
